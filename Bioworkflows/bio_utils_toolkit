@@ -1,6 +1,11 @@
-# Written by: Sarah Dahms (Schoem)
-# Date: 31Mar2024
-# Edit: 19Apr2025
+"""
+File name: bio_utils_toolkit
+Author: Sarah Dahms (Schoem)
+Created: 31Mar2024
+Last Edit: 19Apr2025
+This file will analyze different sequence inputs or sequence files including fast, txt, and SAM files. 
+"""
+
 
 #Searches for a codon in a sequence ("ATG")
 #Example DNA sequence: CCCCATAGAGATAGAGATAGAGAACCCCGCGCGCTCGCATGGGG
