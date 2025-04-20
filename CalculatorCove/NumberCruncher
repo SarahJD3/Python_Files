@@ -1,0 +1,67 @@
+"""
+File name: NumberCruncher.py
+Author: Sarah Schoem
+Created: 31Mar2025
+Last Edit: 19Apr2025
+
+"""
+
+
+
+#Calculates numbers in a file (sum, avg, max, min)
+#Practice file can contain:
+"""
+40
+10
+2
+3
+4
+"""
+
+print("Calculator: Use a file with numbers and I will calculate the sum, avg, max value, and min value.")
+def analyze_numbers(file_path):
+    with open(file_path, 'r') as file:
+        numbers = [float(line.strip()) for line in file]
+
+    total = sum(numbers)
+    average = total / len(numbers)
+    max_num = max(numbers)
+    min_num = min(numbers)
+
+    print(f"sum = {total}")
+    print(f"ave = {average:.2f}")
+    print(f"max = {int(max_num)}")
+    print(f"min = {int(min_num)}")
+
+file_path = input("Enter the file path: ")
+analyze_numbers(file_path)
+
+#This computes a program to average each column in a file:
+
+"""
+Example of values to have in a file:
+1 2 3
+5 4 6
+0 2 4
+"""
+
+print("Calculator to find the average of numbers in columns:")
+def calculate(file_path_2):
+    with open(file_path_2, 'r') as file_1:
+        #Start of column sums
+        column_sums = [0, 0, 0]
+        #Start of column counts
+        column_counts = [0, 0, 0]
+
+        for line_1 in file_1:
+            column_numbers = list(map(int, line_1.split()))
+
+            for i, num in enumerate (column_numbers):
+                column_sums[i] += num
+                column_counts[i] += 1
+        column_averages = [sum / count for sum, count in zip(column_sums, column_counts)]
+
+        for i, avg in enumerate(column_averages):
+            print(f"Average for column {i +1}: {avg:.2f}")
+file_path_2 = input("Enter the file path: ")
+calculate(file_path_2)
