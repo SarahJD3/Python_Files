@@ -1,0 +1,142 @@
+# Written by: Sarah Dahms (Schoem)
+# Date: 31Mar2024
+# Edit: 19Apr2025
+
+#Searches for a codon in a sequence ("ATG")
+#Example DNA sequence: CCCCATAGAGATAGAGATAGAGAACCCCGCGCGCTCGCATGGGG
+print("Question One:")
+
+import re
+
+def function(DNA):
+    match = re.search('ATG', DNA)
+    if match:
+        start_codon_index = match.start()
+        upstream = DNA[start_codon_index - 20:start_codon_index]
+        print(f"The 20 bases upstream are {upstream}")
+    else:
+        print("ATG was not found in the DNA sequence provided.")
+
+DNA = input("Enter the DNA sequence: ")
+function(DNA)
+
+#Searches for GC and AT content in a sequence file:
+print("Question Four:")
+
+def calculate_gc_percentage(sequence):
+    gc_count = sequence.count('G') + sequence.count('C')
+    total_bases = len(sequence)
+    gc_percentage = (gc_count / total_bases) * 100
+    return gc_percentage
+
+def calculate_at_percentage(sequence):
+    at_count = sequence.count('A') + sequence.count('T')
+    total_bases = len(sequence)
+    at_percentage = (at_count / total_bases) * 100
+    return at_percentage
+
+def process_file(file_path_3):
+    sequences = {}
+
+    with open(file_path_3, 'r') as file_2:
+        for line_2 in file_2:
+            accession, sequence = line_2.strip().split(', ')
+            sequences[accession] = sequence
+
+    for accession, sequence in sequences.items():
+        gc_percentage = calculate_gc_percentage(sequence)
+        at_percentage = calculate_at_percentage(sequence)
+        print(f"{accession} {gc_percentage:.0f}% {at_percentage:.0f}%")
+
+file_path_3 = input("Enter the file path: ")
+process_file(file_path_3)
+
+#Summarizing Blast Results
+print("BLAST Results Summary:")
+import re
+
+def parse_blast_results(file_path_4):
+    with open(file_path_4, 'r') as file_3:
+        lines = file_3.readlines()
+    
+    results = {}
+    processed_contigs = set()
+    
+    for line_3 in lines:
+        if line_3.startswith("Query="):
+            query = re.search(r'Query= (.+)', line_3).group(1)
+            if query not in processed_contigs:
+                results[query] = {'best_hit': "", 'e_value': "", 'identities': ""}
+                processed_contigs.add(query)
+        elif line_3.startswith(">"):
+            if query in results:
+                results[query]['best_hit'] = line_3.strip()
+        elif re.match(r'^\s+Score =', line_3):
+            if query in results and not results[query]['e_value']:
+                e_value_match = re.search(r'Expect = (.+)', line_3)
+                if e_value_match:
+                    results[query]['e_value'] = e_value_match.group(1)
+                else:
+                    print("Error: Unable to parse E-value from line:", line_3)
+        elif re.match(r'^\s+Identities =', line_3):
+            if query in results and not results[query]['identities']:
+                identities_match = re.search(r'Identities = \d+/\d+\s\((\d+)%\)', line_3)
+                if identities_match:
+                    results[query]['identities'] = identities_match.group(1)
+                else:
+                    print("Error: Unable to parse identities from line:", line_3)
+    
+    return results
+
+def format_blast_results(results):
+    formatted_results = ""
+    for query, data in results.items():
+        formatted_results += f"{query}\n{data['best_hit']}\nE-value: {data['e_value']}\tIdentities: {data['identities']}%\n\n"
+    return formatted_results
+
+file_path = input("Enter a file name: ")
+results = parse_blast_results(file_path)
+formatted_results = format_blast_results(results)
+
+output_file_path = input("Enter the output file path: ")
+with open(output_file_path, 'w') as output_file:
+    output_file.write(formatted_results)
+
+print(f"Results have been written to {output_file_path}")
+
+#Next Gen Seq SAM file parsing
+print("Question Six:")
+def count_gene_reads(sam_file):
+    gene_counts = {}
+
+    with open(sam_file, 'r') as file:
+        for line in file:
+            # Skip comment lines
+            if line.startswith('@'):
+                continue
+            
+            # Split the line by tabs
+            fields = line.split('\t')
+            
+            # Extract gene ID
+            gene_id = fields[2]
+            
+            # Count occurrences of gene ID
+            if gene_id in gene_counts:
+                gene_counts[gene_id] += 1
+            else:
+                gene_counts[gene_id] = 1
+    
+    return gene_counts
+
+def print_gene_counts(gene_counts):
+    print("Gene ID\tNumber of reads aligning")
+    for gene_id, count in gene_counts.items():
+        print(f"{gene_id}\t{count}")
+
+# Main code
+sam_file_path = input("Enter the file name: ")
+gene_counts = count_gene_reads(sam_file_path)
+print_gene_counts(gene_counts)
+
+
